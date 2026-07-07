@@ -222,13 +222,3 @@ if (backToTop) {
 // Footer year
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-// Keep --topbar-height in sync with the real topbar size
-function setStickyHeights() {
-  const topbar = document.querySelector('.topbar');
-  if (topbar) {
-    document.documentElement.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
-  }
-}
-window.addEventListener('load', setStickyHeights);
-window.addEventListener('resize', setStickyHeights);

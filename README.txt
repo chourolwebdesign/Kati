@@ -1,7 +1,7 @@
 KATI – Bau & Dienstleistungen (Onepager)
 
 Enthalten:
-- Modernes Premium-Design mit Scroll-Animationen
+- Dunkles Premium-Design mit Vollbild-Hero, Laufband, Scroll-Animationen
 - Kontaktformular (öffnet das E-Mail-Programm mit fertig ausgefüllter Nachricht – funktioniert auf jedem Hosting, kein Backend nötig)
 - Galerie mit Lightbox (Bilder zum Vergrößern anklicken)
 - 2-Klick Google Maps (lädt erst nach Zustimmung)
