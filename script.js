@@ -17,6 +17,51 @@ if (navToggle && navMenu) {
   });
 }
 
+// Active nav link while scrolling
+(function activeNav() {
+  const links = document.querySelectorAll('.nav__menu a[href^="#"]:not(.btn)');
+  const sections = [...links]
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+
+  const byId = {};
+  links.forEach(a => { byId[a.getAttribute('href').slice(1)] = a; });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const link = byId[entry.target.id];
+      if (!link) return;
+      if (entry.isIntersecting) {
+        links.forEach(a => a.classList.remove('is-active'));
+        link.classList.add('is-active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach(s => io.observe(s));
+})();
+
+// Scroll reveal
+(function reveal() {
+  const els = document.querySelectorAll('.reveal');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(el => io.observe(el));
+})();
+
 // Cookie banner (minimal)
 const cookieBanner = document.getElementById('cookieBanner');
 const cookieAccept = document.getElementById('cookieAccept');
@@ -43,7 +88,6 @@ const mapTwoClick = document.getElementById('mapTwoClick');
 
 if (loadMapBtn && mapTwoClick) {
   loadMapBtn.addEventListener('click', () => {
-    // Encode query for Google Maps embed
     const q = encodeURIComponent('St.-Koloman-Weg, 93055 Regensburg');
     const iframe = document.createElement('iframe');
     iframe.loading = 'lazy';
@@ -56,37 +100,79 @@ if (loadMapBtn && mapTwoClick) {
   });
 }
 
-// Kurzanfrage per E-Mail (öffnet Mail-App)
+// Anfrage per E-Mail (öffnet Mail-App mit fertig ausgefüllter Nachricht)
 const emailQuickForm = document.getElementById('emailQuick');
-const emailQuickName = document.getElementById('emailQuickName');
-const emailQuickSuccess = document.getElementById('emailQuickSuccess');
 
 if (emailQuickForm) {
   emailQuickForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = (emailQuickName?.value || '').trim();
-    const subject = encodeURIComponent('Anfrage – KATI Außenanlagen & Dienstleistungen');
+    const name = (document.getElementById('emailQuickName')?.value || '').trim();
+    const phone = (document.getElementById('emailQuickPhone')?.value || '').trim();
+    const service = (document.getElementById('emailQuickService')?.value || '').trim();
+    const message = (document.getElementById('emailQuickMessage')?.value || '').trim();
+
+    const subject = encodeURIComponent(
+      service ? `Anfrage: ${service} – KATI Außenanlagen & Dienstleistungen`
+              : 'Anfrage – KATI Außenanlagen & Dienstleistungen'
+    );
     const body = encodeURIComponent(
-      `Hallo KATI,\n\nmein Name ist ${name || '[Name]'} und ich habe eine Anfrage.\n\nOrt: \nWas soll gemacht werden?: \nWunschtermin: \n\nViele Grüße\n${name || ''}`
+      `Hallo KATI,\n\n` +
+      `mein Name ist ${name || '[Name]'} und ich habe eine Anfrage.\n\n` +
+      (service ? `Leistung: ${service}\n` : '') +
+      (phone ? `Telefon: ${phone}\n` : '') +
+      `\n${message}\n\n` +
+      `Viele Grüße\n${name || ''}`
     );
     window.location.href = `mailto:Oktaykati88@gmail.com?subject=${subject}&body=${body}`;
-    if (emailQuickSuccess) emailQuickSuccess.textContent = 'E-Mail wird geöffnet…';
+
+    const success = document.getElementById('emailQuickSuccess');
+    if (success) success.textContent = 'Ihr E-Mail-Programm wird geöffnet …';
   });
 }
 
-// Friendly success message for Hero Netlify Form
-(function heroSuccess() {
-  const heroForm = document.forms['kati-schnellanfrage'];
-  const heroSuccessEl = document.getElementById('heroSuccess');
-  if (!heroForm || !heroSuccessEl) return;
-  heroForm.addEventListener('submit', () => {
-    heroSuccessEl.textContent = 'Danke! Ihre Anfrage wurde gesendet. Wir melden uns schnell zurück.';
+// Gallery lightbox
+(function lightbox() {
+  const box = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  const items = [...document.querySelectorAll('.gallery-item img')];
+  if (!box || !img || !items.length) return;
+
+  let current = 0;
+
+  function show(i) {
+    current = (i + items.length) % items.length;
+    img.src = items[current].src;
+    img.alt = items[current].alt || '';
+  }
+  function open(i) {
+    show(i);
+    box.classList.add('is-open');
+    box.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('modal-open');
+  }
+  function close() {
+    box.classList.remove('is-open');
+    box.setAttribute('aria-hidden', 'true');
+    document.documentElement.classList.remove('modal-open');
+  }
+
+  items.forEach((el, i) => {
+    el.closest('.gallery-item').addEventListener('click', () => open(i));
+  });
+  document.getElementById('lightboxClose')?.addEventListener('click', close);
+  document.getElementById('lightboxPrev')?.addEventListener('click', () => show(current - 1));
+  document.getElementById('lightboxNext')?.addEventListener('click', () => show(current + 1));
+  box.addEventListener('click', (e) => { if (e.target === box) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (!box.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
   });
 })();
 
 // Modals (Impressum/Datenschutz)
 const openButtons = document.querySelectorAll('[data-modal-open]');
-const closeSelectors = '[data-modal-close]';
 
 function openModal(id) {
   const modal = document.getElementById(id);
@@ -94,7 +180,6 @@ function openModal(id) {
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
   document.documentElement.classList.add('modal-open');
-  // focus close button
   const closeBtn = modal.querySelector('.modal__close');
   if (closeBtn) closeBtn.focus();
 }
@@ -113,11 +198,8 @@ openButtons.forEach((btn) => {
   });
 });
 
-document.querySelectorAll(closeSelectors).forEach((el) => {
-  el.addEventListener('click', () => {
-    const modal = el.closest('.modal');
-    closeModal(modal);
-  });
+document.querySelectorAll('[data-modal-close]').forEach((el) => {
+  el.addEventListener('click', () => closeModal(el.closest('.modal')));
 });
 
 document.addEventListener('keydown', (e) => {
@@ -126,48 +208,17 @@ document.addEventListener('keydown', (e) => {
   if (modal) closeModal(modal);
 });
 
-
-
-
-function fixHeaderOffset() {
-  const topbar = document.querySelector('.topbar');
-  if (!topbar) return;
-  document.documentElement.style.setProperty(
-    '--topbar-height',
-    `${topbar.offsetHeight}px`
-  );
+// Back to top
+const backToTop = document.getElementById('backToTop');
+if (backToTop) {
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('is-visible', window.scrollY > 600);
+  }, { passive: true });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 }
-window.addEventListener('load', fixHeaderOffset);
-window.addEventListener('resize', fixHeaderOffset);
 
-
-
-function fixHeaderHeights() {
-  const topbar = document.querySelector('.topbar');
-  const header = document.querySelector('.header');
-  if (topbar) {
-    document.documentElement.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
-  }
-  if (header) {
-    document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
-  }
-  const spacer = (topbar?.offsetHeight || 0) + (header?.offsetHeight || 0);
-  document.body.style.paddingTop = spacer + 'px';
-}
-window.addEventListener('load', fixHeaderHeights);
-window.addEventListener('resize', fixHeaderHeights);
-
-
-/* ===== SET CSS VARS FOR TOPBAR + HEADER HEIGHT ===== */
-function setStickyHeights(){
-  const topbar = document.querySelector('.topbar');
-  const header = document.querySelector('.header');
-  if(topbar){
-    document.documentElement.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
-  }
-  if(header){
-    document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
-  }
-}
-window.addEventListener('load', setStickyHeights);
-window.addEventListener('resize', setStickyHeights);
+// Footer year
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
