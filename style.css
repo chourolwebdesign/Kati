@@ -85,8 +85,13 @@ img{max-width:100%}
 }
 
 .brand{display:flex; align-items:center; text-decoration:none; min-width:0}
-.logo{height:56px; width:auto; display:block; flex:0 0 auto}
-@media (max-width: 768px){ .logo{height:46px} }
+.logo{
+  height:56px; width:auto; display:block; flex:0 0 auto;
+  background:#fff;
+  padding:5px 10px;
+  border-radius:12px;
+}
+@media (max-width: 768px){ .logo{height:46px; padding:4px 8px; border-radius:10px} }
 
 /* NAV */
 .nav{display:flex; align-items:center; gap:14px; position:relative; flex:0 0 auto}
@@ -863,10 +868,10 @@ textarea{resize:vertical}
   overflow:hidden;
 }
 .footer__big{
-  font-size: clamp(4rem, 16vw, 13rem);
+  font-size: clamp(4rem, 15vw, 12rem);
   font-weight:900;
   line-height:.9;
-  letter-spacing:-.03em;
+  letter-spacing:.08em;
   text-transform:uppercase;
   text-align:center;
   color: transparent;
@@ -879,6 +884,10 @@ textarea{resize:vertical}
 .footer__links{display:flex; gap:16px; flex-wrap:wrap}
 .footer a{text-decoration:none}
 .footer a:hover{color:var(--accent)}
+@media (max-width: 1024px){
+  .footer{padding-bottom: 104px}
+  .footer__inner{padding-right: 72px}
+}
 
 /* Sticky WhatsApp */
 .floatWhatsApp{

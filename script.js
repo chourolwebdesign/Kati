@@ -88,7 +88,7 @@ const mapTwoClick = document.getElementById('mapTwoClick');
 
 if (loadMapBtn && mapTwoClick) {
   loadMapBtn.addEventListener('click', () => {
-    const q = encodeURIComponent('St.-Koloman-Weg, 93055 Regensburg');
+    const q = encodeURIComponent('St.-Koloman-Weg 3, 93055 Regensburg');
     const iframe = document.createElement('iframe');
     iframe.loading = 'lazy';
     iframe.referrerPolicy = 'no-referrer-when-downgrade';
