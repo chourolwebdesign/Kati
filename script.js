@@ -123,7 +123,7 @@ if (emailQuickForm) {
       `\n${message}\n\n` +
       `Viele Grüße\n${name || ''}`
     );
-    window.location.href = `mailto:Oktaykati88@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:info@katiaußenanlagen.de?subject=${subject}&body=${body}`;
 
     const success = document.getElementById('emailQuickSuccess');
     if (success) success.textContent = 'Ihr E-Mail-Programm wird geöffnet …';
