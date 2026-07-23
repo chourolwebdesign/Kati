@@ -21,13 +21,15 @@
   --radius2:24px;
   --max:1200px;
 
-  --header-h: 76px;
+  --header-h: 100px;
 }
 
 /* ---------- Base ---------- */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 [id]{scroll-margin-top: calc(var(--header-h) + 24px)}
+@media (max-width: 768px){ :root{ --header-h: 84px; } }
+@media (max-width: 420px){ :root{ --header-h: 76px; } }
 body{
   margin:0;
   font-family:Archivo,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -86,12 +88,13 @@ img{max-width:100%}
 
 .brand{display:flex; align-items:center; text-decoration:none; min-width:0}
 .logo{
-  height:56px; width:auto; display:block; flex:0 0 auto;
+  height:78px; width:auto; display:block; flex:0 0 auto;
   background:#fff;
-  padding:5px 10px;
-  border-radius:12px;
+  padding:7px 12px;
+  border-radius:14px;
 }
-@media (max-width: 768px){ .logo{height:46px; padding:4px 8px; border-radius:10px} }
+@media (max-width: 768px){ .logo{height:60px; padding:5px 9px; border-radius:12px} }
+@media (max-width: 420px){ .logo{height:52px} }
 
 /* NAV */
 .nav{display:flex; align-items:center; gap:14px; position:relative; flex:0 0 auto}
